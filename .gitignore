@@ -1,0 +1,9 @@
+# Your savings
+piggybank.json
+.piggybank-*.tmp
+
+# Generated certificates, including the local CA's private key — never commit these
+certs/
+
+# Build output
+/piggybank

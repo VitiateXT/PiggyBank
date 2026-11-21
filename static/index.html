@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4a1d9e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Piggy Bank</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐷</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg" aria-hidden="true"><div class="rays"></div></div>
+
+  <main class="app">
+    <header class="topbar">
+      <div class="pill" title="Everything you've ever saved">
+        <span class="coin-icon sm" aria-hidden="true">€</span>
+        <span class="pill-label">TOTAL</span>
+        <b id="totalText">0 €</b>
+      </div>
+      <div class="topbar-right">
+        <button class="pill icon" id="soundBtn" type="button" aria-label="Toggle sound">🔊</button>
+        <button class="pill icon" id="settingsBtn" type="button" aria-label="Settings">⚙️</button>
+      </div>
+    </header>
+
+    <section class="stage">
+      <h1 class="month" id="monthName">MONTH</h1>
+
+      <div class="pig-wrap" id="pigWrap">
+        <div class="pig-bob">
+          <div class="pig-hop" id="pigHop">
+            <div class="coins-layer" id="coinsLayer"></div>
+
+            <svg class="pig" id="pig" viewBox="0 0 320 260" aria-hidden="true">
+              <defs>
+                <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ffc6d7"/>
+                  <stop offset="1" stop-color="#ff86ab"/>
+                </linearGradient>
+                <linearGradient id="goldGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="190">
+                  <stop offset="0" stop-color="#ffe45c"/>
+                  <stop offset=".5" stop-color="#ffc21a"/>
+                  <stop offset="1" stop-color="#f08c00"/>
+                </linearGradient>
+                <clipPath id="bodyClip">
+                  <ellipse cx="160" cy="145" rx="110" ry="86"/>
+                </clipPath>
+              </defs>
+
+              <!-- tail -->
+              <g class="tail">
+                <path d="M54 130 c-18 -4 -30 -18 -20 -30 c9 -10 22 2 12 10 c-8 6 -20 0 -22 -8"
+                      fill="none" stroke="#2b0f45" stroke-width="13" stroke-linecap="round"/>
+                <path d="M54 130 c-18 -4 -30 -18 -20 -30 c9 -10 22 2 12 10 c-8 6 -20 0 -22 -8"
+                      fill="none" stroke="#ff9fbd" stroke-width="6" stroke-linecap="round"/>
+              </g>
+
+              <!-- legs (behind the body) -->
+              <g stroke="#2b0f45" stroke-width="6">
+                <rect x="98" y="196" width="30" height="46" rx="13" fill="#f06a98"/>
+                <rect x="208" y="196" width="30" height="46" rx="13" fill="#f06a98"/>
+                <rect x="70" y="202" width="32" height="46" rx="14" fill="url(#pinkGrad)"/>
+                <rect x="180" y="202" width="32" height="46" rx="14" fill="url(#pinkGrad)"/>
+              </g>
+
+              <!-- far ear -->
+              <path d="M186 82 L186 28 L228 68 Z" fill="#f06a98" stroke="#2b0f45" stroke-width="6" stroke-linejoin="round"/>
+
+              <!-- body -->
+              <ellipse cx="160" cy="145" rx="112" ry="88" fill="url(#pinkGrad)"/>
+
+              <!-- the gold -->
+              <g clip-path="url(#bodyClip)">
+                <g id="liquid" style="transform: translateY(242px)">
+                  <path class="wave wave-back" fill="#ffd84d" opacity=".8"
+                        d="M-80 -5 q20 8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V320 H-80 Z"/>
+                  <path class="wave wave-front" fill="url(#goldGrad)" stroke="#fff3b0" stroke-width="4"
+                        d="M-40 0 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 V320 H-40 Z"/>
+                  <g fill="#ffd23f" stroke="#d98200" stroke-width="3" opacity=".6">
+                    <ellipse cx="92" cy="38" rx="16" ry="7"/>
+                    <ellipse cx="204" cy="54" rx="16" ry="7"/>
+                    <ellipse cx="140" cy="84" rx="16" ry="7"/>
+                    <ellipse cx="238" cy="104" rx="16" ry="7"/>
+                    <ellipse cx="84" cy="116" rx="16" ry="7"/>
+                    <ellipse cx="176" cy="138" rx="16" ry="7"/>
+                    <ellipse cx="120" cy="170" rx="16" ry="7"/>
+                  </g>
+                  <g fill="#fffbe6">
+                    <g transform="translate(118 26)"><path class="twinkle" d="M0 -9 Q2 -2 9 0 Q2 2 0 9 Q-2 2 -9 0 Q-2 -2 0 -9Z"/></g>
+                    <g transform="translate(226 70)"><path class="twinkle t2" d="M0 -9 Q2 -2 9 0 Q2 2 0 9 Q-2 2 -9 0 Q-2 -2 0 -9Z"/></g>
+                    <g transform="translate(70 80)"><path class="twinkle t3" d="M0 -9 Q2 -2 9 0 Q2 2 0 9 Q-2 2 -9 0 Q-2 -2 0 -9Z"/></g>
+                    <g transform="translate(160 118)"><path class="twinkle t4" d="M0 -9 Q2 -2 9 0 Q2 2 0 9 Q-2 2 -9 0 Q-2 -2 0 -9Z"/></g>
+                  </g>
+                </g>
+              </g>
+
+              <!-- body outline + shine -->
+              <ellipse cx="160" cy="145" rx="112" ry="88" fill="none" stroke="#2b0f45" stroke-width="6"/>
+              <ellipse cx="108" cy="92" rx="34" ry="12" fill="#fff" opacity=".55" transform="rotate(-24 108 92)"/>
+              <circle cx="76" cy="116" r="6" fill="#fff" opacity=".45"/>
+
+              <!-- near ear -->
+              <g class="ear">
+                <path d="M208 84 L220 22 L256 94 Z" fill="url(#pinkGrad)" stroke="#2b0f45" stroke-width="6" stroke-linejoin="round"/>
+                <path d="M218 78 L223 42 L243 84 Z" fill="#ff6f9a"/>
+              </g>
+
+              <!-- face: normal / eager (money hovering) / happy (money went in) -->
+              <ellipse class="blush" cx="222" cy="152" rx="15" ry="9" fill="#ff5c8a"/>
+              <g class="eye eye-normal">
+                <ellipse cx="226" cy="118" rx="9" ry="11" fill="#2b0f45"/>
+                <circle cx="229" cy="113" r="3.5" fill="#fff"/>
+              </g>
+              <path class="eye-happy" d="M215 122 q11 -15 22 0" fill="none" stroke="#2b0f45" stroke-width="5.5" stroke-linecap="round"/>
+              <path class="mouth-normal" d="M212 170 q11 10 24 2" fill="none" stroke="#2b0f45" stroke-width="4.5" stroke-linecap="round"/>
+              <g class="mouth-happy">
+                <path d="M204 164 Q218 192 240 166 Z" fill="#2b0f45" stroke="#2b0f45" stroke-width="4" stroke-linejoin="round"/>
+                <ellipse cx="222" cy="178" rx="8" ry="4.5" fill="#ff6f9a"/>
+              </g>
+              <ellipse class="mouth-eager" cx="222" cy="172" rx="6" ry="7.5" fill="#2b0f45"/>
+              <ellipse cx="268" cy="150" rx="26" ry="31" fill="#ff9fbd" stroke="#2b0f45" stroke-width="6"/>
+              <ellipse cx="261" cy="150" rx="4.5" ry="8" fill="#2b0f45"/>
+              <ellipse cx="276" cy="150" rx="4.5" ry="8" fill="#2b0f45"/>
+
+              <!-- coin slot -->
+              <rect class="slot" x="128" y="54" width="64" height="12" rx="6" fill="#2b0f45" stroke="#2b0f45" stroke-width="3"/>
+            </svg>
+
+            <div class="pct" id="pct">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="month-box">
+        <span class="month-label">SAVED THIS MONTH</span>
+        <div class="month-amount"><span id="monthText">0 €</span><span class="month-goal">/ <span id="goalText">1.000 €</span></span></div>
+      </div>
+    </section>
+
+    <section class="card tray" aria-label="Your money">
+      <div class="tray-head">
+        <span class="tray-title">Drag money into the piggy!</span>
+        <button class="tray-type" id="typeBtn" type="button" aria-label="Type an amount instead">⌨️</button>
+      </div>
+      <div class="notes" id="notes"></div>
+      <div class="coins" id="coins"></div>
+    </section>
+  </main>
+
+  <dialog class="modal" id="settingsDialog">
+    <form class="modal-body" id="settingsForm" autocomplete="off">
+      <button class="close-x" type="button" data-close aria-label="Close">✕</button>
+      <h2>Settings</h2>
+      <label class="field-label" for="goalInput">Monthly saving goal</label>
+      <div class="input-wrap">
+        <span class="euro">€</span>
+        <input id="goalInput" type="text" inputmode="decimal" enterkeyhint="done" maxlength="16">
+      </div>
+      <button class="btn btn-green" type="submit">SAVE</button>
+      <div class="modal-actions">
+        <button class="btn btn-small btn-plain" id="undoBtn" type="button">Undo last</button>
+        <button class="btn btn-small btn-red" id="resetBtn" type="button">Empty piggy</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="typeDialog">
+    <form class="modal-body" id="typeForm" autocomplete="off">
+      <button class="close-x" type="button" data-close aria-label="Close">✕</button>
+      <h2>Type an amount</h2>
+      <div class="input-wrap">
+        <span class="euro">€</span>
+        <input id="typeInput" type="text" inputmode="decimal" enterkeyhint="done" maxlength="16" placeholder="0,00">
+      </div>
+      <button class="btn btn-gold" type="submit">DEPOSIT</button>
+    </form>
+  </dialog>
+
+  <div class="banner" id="banner" aria-live="polite"></div>
+  <div class="toast" id="toast" role="alert"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <script src="app.js"></script>
+</body>
+</html>
