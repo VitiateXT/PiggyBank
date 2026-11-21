@@ -21,13 +21,13 @@ go build && ./piggybank
 On start it prints the addresses to open, for example:
 
 ```
-   This computer:  https://localhost:8443
-   Your network:   https://192.168.188.61:8443
-                   https://betula-papyrifera.local:8443
+   This computer:  https://localhost:7443
+   Your network:   https://192.168.188.61:7443
+                   https://betula-papyrifera.local:7443
 ```
 
 Open the "Your network" address on any phone or tablet in the same Wi-Fi.
-`http://…:8080` also works; it redirects to HTTPS.
+`http://…:7080` also works; it redirects to HTTPS.
 
 Your savings are stored in `piggybank.json` next to where you start it.
 
@@ -35,8 +35,8 @@ Your savings are stored in `piggybank.json` next to where you start it.
 
 | Flag     | Default          | What it does                                                    |
 |----------|------------------|-----------------------------------------------------------------|
-| `-addr`  | `:8443`          | HTTPS address (all network interfaces)                          |
-| `-http`  | `:8080`          | HTTP address that redirects to HTTPS (`-http ""` turns it off)  |
+| `-addr`  | `:7443`          | HTTPS address (all network interfaces)                          |
+| `-http`  | `:7080`          | HTTP address that redirects to HTTPS (`-http ""` turns it off)  |
 | `-data`  | `piggybank.json` | where savings are stored                                        |
 | `-certs` | `certs`          | where the generated certificates are kept                       |
 | `-cert`, `-key` | –         | use your own certificate instead (e.g. from `mkcert`)          |
@@ -54,13 +54,13 @@ warning goes away for good:
 
 **iPhone / iPad**
 
-1. In Safari open `http://<computer-ip>:8080/ca.crt` and allow the download.
+1. In Safari open `http://<computer-ip>:7080/ca.crt` and allow the download.
 2. Settings → General → VPN & Device Management → *Piggy Bank Local CA* → Install.
 3. Settings → General → About → Certificate Trust Settings → turn on *Piggy Bank Local CA*.
 
 **Android**
 
-1. Open `http://<computer-ip>:8080/ca.crt` to download it.
+1. Open `http://<computer-ip>:7080/ca.crt` to download it.
 2. Settings → Security → More security settings → Encryption & credentials →
    Install a certificate → CA certificate → pick `piggybank-ca.crt`.
    (The exact menu names differ a little between phone makers.)
@@ -76,6 +76,6 @@ Deleting it creates a fresh CA on the next start (phones then need to trust the 
 If phones can't connect, allow the ports, e.g. with ufw:
 
 ```bash
-sudo ufw allow 8443/tcp
-sudo ufw allow 8080/tcp
+sudo ufw allow 7443/tcp
+sudo ufw allow 7080/tcp
 ```

@@ -17,6 +17,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -298,8 +299,8 @@ func writeError(w http.ResponseWriter, err error) {
 }
 
 func main() {
-	addr := flag.String("addr", ":8443", "HTTPS address (the default listens on every network interface)")
-	httpAddr := flag.String("http", ":8080", "plain HTTP address that redirects to HTTPS and offers /ca.crt (empty disables it)")
+	addr := flag.String("addr", ":7443", "HTTPS address (the default listens on every network interface)")
+	httpAddr := flag.String("http", ":7080", "plain HTTP address that redirects to HTTPS and offers /ca.crt (empty disables it)")
 	dataPath := flag.String("data", "piggybank.json", "file where savings are stored")
 	certDir := flag.String("certs", "certs", "folder for the generated local CA and server certificate")
 	certFile := flag.String("cert", "", "use this TLS certificate (e.g. from mkcert) instead of generating one")
@@ -337,21 +338,38 @@ func main() {
 		app.caDER = ca.cert.Raw
 	}
 
-	errc := make(chan error, 2)
+	// Claim the ports before announcing anything, so a busy port fails clearly.
+	secureLn := listen(*addr, "-addr")
+	var plainLn net.Listener
 	if *httpAddr != "" {
-		plain := &http.Server{Addr: *httpAddr, Handler: app.redirectHandler(httpsPort), ReadHeaderTimeout: 5 * time.Second}
-		go func() { errc <- fmt.Errorf("http: %w", plain.ListenAndServe()) }()
+		plainLn = listen(*httpAddr, "-http")
+	}
+
+	errc := make(chan error, 2)
+	if plainLn != nil {
+		plain := &http.Server{Handler: app.redirectHandler(httpsPort), ReadHeaderTimeout: 5 * time.Second}
+		go func() { errc <- fmt.Errorf("http: %w", plain.Serve(plainLn)) }()
 	}
 	secure := &http.Server{
-		Addr:              *addr,
 		Handler:           app.routes(static),
 		ReadHeaderTimeout: 5 * time.Second,
 		TLSConfig:         &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12},
 	}
-	go func() { errc <- fmt.Errorf("https: %w", secure.ListenAndServeTLS("", "")) }()
+	go func() { errc <- fmt.Errorf("https: %w", secure.ServeTLS(secureLn, "", "")) }()
 
 	printURLs(httpsPort, *httpAddr, app.caDER != nil, *dataPath)
 	log.Fatal(<-errc)
+}
+
+func listen(addr, flagName string) net.Listener {
+	ln, err := net.Listen("tcp", addr)
+	if errors.Is(err, syscall.EADDRINUSE) {
+		log.Fatalf("%s is already used by another program. Pick a different port, e.g.: go run . %s :<port>", addr, flagName)
+	}
+	if err != nil {
+		log.Fatalf("listen on %s: %v", addr, err)
+	}
+	return ln
 }
 
 func printURLs(httpsPort, httpAddr string, haveCA bool, dataPath string) {
