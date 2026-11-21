@@ -37,21 +37,25 @@ body {
   inset: 0;
   overflow: hidden;
   z-index: -1;
-  background: radial-gradient(120% 75% at 50% 30%, #9a66ff 0%, #5a2bd1 45%, #2e1170 100%);
+  background: radial-gradient(130% 90% at 50% 20%, #9a66ff 0%, #5a2bd1 50%, #2e1170 100%);
 }
 
-.rays {
+/* softly drifting sparkles; an even pattern, so it looks right at any size */
+.bg::before {
+  content: '';
   position: absolute;
-  left: 50%;
-  top: 32%;
-  width: 900px;
-  height: 900px;
-  margin: -450px 0 0 -450px;
-  border-radius: 50%;
-  background: repeating-conic-gradient(rgba(255, 255, 255, .09) 0deg 9deg, transparent 9deg 18deg);
-  -webkit-mask: radial-gradient(circle, #000 10%, transparent 62%);
-  mask: radial-gradient(circle, #000 10%, transparent 62%);
-  animation: spin 70s linear infinite;
+  inset: 0 0 -240px;
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' fill='white'><path opacity='.22' d='M42 30l3.5 9.5 9.5 3.5-9.5 3.5L42 56l-3.5-9.5L29 43l9.5-3.5z'/><path opacity='.14' d='M176 128l2.5 6.5 6.5 2.5-6.5 2.5-2.5 6.5-2.5-6.5-6.5-2.5 6.5-2.5z'/><path opacity='.18' d='M96 186l3 8 8 3-8 3-3 8-3-8-8-3 8-3z'/><circle cx='150' cy='38' r='2.5' opacity='.2'/><circle cx='210' cy='206' r='3' opacity='.14'/><circle cx='22' cy='132' r='2' opacity='.18'/><circle cx='118' cy='106' r='1.6' opacity='.22'/></svg>") 0 0 / 240px 240px;
+  opacity: .7;
+  animation: drift 40s linear infinite;
+}
+
+/* darker edges keep the eye on the middle */
+.bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(farthest-corner at 50% 45%, transparent 55%, rgba(20, 0, 50, .45));
 }
 
 /* ---------- layout ---------- */
@@ -122,6 +126,16 @@ button.pill:active { transform: scale(.92); }
   position: relative;
   width: var(--pig-w);
   transition: transform .2s;
+}
+
+/* soft spotlight behind the pig; it is part of the pig, so it always lines up */
+.pig-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -22% -18% -12%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 225, 255, .42), rgba(255, 200, 255, .16) 55%, transparent);
+  pointer-events: none;
 }
 
 /* ground shadow */
@@ -658,7 +672,7 @@ button.pill:active { transform: scale(.92); }
 
 /* ---------- keyframes ---------- */
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes drift { to { transform: translateY(-240px); } }
 
 @keyframes bob {
   0%, 100% { transform: translateY(0); }
@@ -746,7 +760,7 @@ button.pill:active { transform: scale(.92); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rays, .month, .pig-bob, .pig-wrap::after, .wave, .twinkle, .tail, .note::after {
+  .bg::before, .month, .pig-bob, .pig-wrap::after, .wave, .twinkle, .tail, .note::after {
     animation: none !important;
   }
   #liquid { transition-duration: .4s; }
@@ -756,18 +770,27 @@ button.pill:active { transform: scale(.92); }
 
 /* short phones (iPhone SE and friends) */
 @media (orientation: portrait) and (max-height: 700px) {
-  :root { --pig-w: min(60vw, 210px, 32vh); }
+  :root { --pig-w: min(60vw, 210px, 30vh); }
   .month { font-size: 22px; }
   .stage { padding: 2px 0 8px; }
   .month-box { margin-top: 4px; }
   .month-amount { font-size: 30px; }
 }
 
-/* tall phones have room for two rows of bigger, easier-to-hit coins */
-@media (orientation: portrait) and (max-width: 599px) and (min-height: 760px) {
+/* phones get two rows of bigger, easier-to-hit coins */
+@media (orientation: portrait) and (max-width: 599px) and (min-height: 540px) {
   :root { --coin-k: min(2.1px, .56vw); }
   .coins { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 4px; }
   .coins .money-btn { min-height: 52px; }
+}
+@media (orientation: portrait) and (max-width: 599px) and (min-height: 540px) and (max-height: 700px) {
+  .coins .money-btn { min-height: 46px; }
+  .notes { margin-bottom: 6px; }
+}
+@media (orientation: portrait) and (max-width: 599px) and (max-height: 620px) {
+  :root { --pig-w: min(60vw, 210px, 27vh); }
+  .coins .money-btn { min-height: 44px; }
+  .tray-head { margin-bottom: 4px; }
 }
 
 /* tablets in portrait: everything bigger */
@@ -791,29 +814,65 @@ button.pill:active { transform: scale(.92); }
   .notes { gap: 14px 18px; margin-bottom: 16px; }
 }
 
-/* landscape (phones on their side, tablets, desktops): pig left, money right */
-@media (min-aspect-ratio: 4/3) and (min-width: 600px) {
-  :root { --pig-w: min(38vw, 54vh, 500px); --coin-k: min(2.4px, .21vw); }
+/* short tablets / browser windows in portrait: shrink the pig so the tray fits */
+@media (orientation: portrait) and (min-width: 600px) and (max-height: 960px) {
+  :root { --pig-w: min(54vw, 30vh); --coin-k: min(2.4px, .4vw); }
+  .app { max-width: 600px; }
+  .month { font-size: 36px; }
+  .month-amount { font-size: 46px; }
+  .pct { font-size: 44px; }
+  .stage { padding-bottom: 8px; }
+}
+
+/* landscape (phones on their side, tablets, desktops) and wide-enough square-ish
+   screens (foldables, small windows): pig left, money right */
+@media (min-aspect-ratio: 4/3) and (min-width: 600px), (min-aspect-ratio: 7/9) and (min-width: 800px) {
+  :root {
+    /* pig and tray grow together with the screen */
+    --pig-w: min(36vw, 54vh, 720px);
+    --tray-w: clamp(min(380px, 46vw), var(--pig-w) * 1.15, 46vw);
+    /* the 8 coins are 171.5 mm wide together; fit them in the tray */
+    --coin-k: calc((var(--tray-w) - 64px) / 180);
+    --gap: clamp(20px, 5vw, 110px);
+  }
   .app {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto auto;
     grid-template-rows: auto 1fr;
-    column-gap: 28px;
-    max-width: 1100px;
+    justify-content: center;
+    align-items: center;
+    column-gap: var(--gap);
+    max-width: none;
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
   }
-  .topbar { grid-column: 1 / -1; }
+  .topbar { grid-column: 1 / -1; align-self: start; }
   .stage { padding: 0; }
-  .tray { align-self: center; }
-  .rays { left: 27%; top: 52%; }
-  .month { font-size: clamp(24px, 4.5vh, 44px); }
-  .month-amount { font-size: clamp(28px, 6vh, 58px); }
-  .pct { font-size: clamp(28px, 6vh, 56px); }
+  .tray { width: var(--tray-w); }
+  .tray-title { font-size: clamp(15px, calc(var(--tray-w) * .034), 26px); }
+  .notes { gap: calc(var(--tray-w) * .02) calc(var(--tray-w) * .025); margin-bottom: calc(var(--tray-w) * .02); }
+  .month { font-size: clamp(24px, 4.5vh, 56px); }
+  .month-label { font-size: clamp(10px, 1.3vh, 16px); }
+  .month-amount { font-size: clamp(28px, 6vh, 72px); }
+  .pct { font-size: clamp(28px, calc(var(--pig-w) * .13), 84px); }
+  .float-text { font-size: clamp(30px, calc(var(--pig-w) * .11), 64px); }
+}
+
+/* big screens: chunkier top bar */
+@media (min-aspect-ratio: 7/9) and (min-width: 1300px) and (min-height: 800px) {
+  .app { padding-top: 20px; padding-left: 28px; padding-right: 28px; }
+  .pill { height: 52px; font-size: 19px; }
+  .pill.icon { width: 52px; font-size: 22px; }
+  .pill-label { font-size: 14px; }
+  .tray { padding: 18px 22px 24px; border-radius: 34px; }
+  .tray-head { margin-bottom: 14px; }
+  .tray-type { width: 50px; height: 44px; font-size: 22px; }
 }
 
 /* landscape phones are very short */
 @media (min-aspect-ratio: 4/3) and (min-width: 600px) and (max-height: 500px) {
+  /* phones on their side: give the tray more of the width for bigger coins */
+  :root { --tray-w: min(54vw, 420px); }
   .app { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
   .pill { height: 36px; }
   .pill.icon { width: 36px; }
